@@ -128,85 +128,83 @@ def data() -> Union[pd.DataFrame, None]:
         return None
 
 # drone mini_Project_access.py
+# access.py
+
 import rasterio
 import numpy as np
 import matplotlib.pyplot as plt
+from rasterio.plot import show
 
 def load_rasters(orthophoto_path, dsm_path, dem_path):
     """
     Load orthophoto, DSM, and DEM raster files.
-
-    Parameters:
-    -----------
-    orthophoto_path : str
-        Path to the orthophoto (RGB) TIFF file.
-    dsm_path : str
-        Path to the Digital Surface Model (DSM) TIFF file.
-    dem_path : str
-        Path to the Digital Elevation Model (DEM) TIFF file.
-
-    Returns:
-    --------
-    orthophoto : numpy.ndarray
-        Orthophoto raster (bands, rows, cols).
-    dsm : numpy.ndarray
-        DSM raster array.
-    dem : numpy.ndarray
-        DEM raster array.
-    profile : dict
-        Raster profile (from DSM, used later for saving/CHM).
     """
     with rasterio.open(orthophoto_path) as src:
         orthophoto = src.read()  # shape (bands, rows, cols)
+        ortho_profile = src.profile
     
     with rasterio.open(dsm_path) as src:
-        dsm = src.read(1)  # first band only
-        profile = src.profile
+        dsm = src.read(1)
+        dsm_profile = src.profile
     
     with rasterio.open(dem_path) as src:
-        dem = src.read(1)  # first band only
+        dem = src.read(1)
+        dem_profile = src.profile
     
-    return orthophoto, dsm, dem, profile
+    return orthophoto, dsm, dem, dsm_profile
 
 
 def generate_chm(dsm, dem):
     """
     Generate Canopy Height Model (CHM) = DSM - DEM.
-
-    Parameters:
-    -----------
-    dsm : numpy.ndarray
-        DSM raster array.
-    dem : numpy.ndarray
-        DEM raster array.
-
-    Returns:
-    --------
-    chm : numpy.ndarray
-        Canopy Height Model (DSM - DEM).
     """
     chm = np.where((dsm != 0) & (dem != 0), dsm - dem, np.nan)
     return chm
 
 
-def visualize_raster(raster, title, cmap="viridis"):
+def visualize_dem(dem, profile, title="Digital Elevation Model (DEM)"):
     """
-    Quick visualization of a single-band raster.
+    Visualize DEM with real elevation values.
+    """
+    plt.figure(figsize=(10, 8))
+    show(dem, transform=profile['transform'], cmap="terrain")
+    plt.colorbar(label="Elevation (m)")
+    plt.title(title)
+    plt.show()
 
-    Parameters:
-    -----------
-    raster : numpy.ndarray
-        2D raster array.
-    title : str
-        Plot title.
-    cmap : str
-        Colormap (default: viridis).
+
+def visualize_dsm(dsm, profile, title="Digital Surface Model (DSM)"):
     """
-    plt.figure(figsize=(8, 6))
-    plt.imshow(raster, cmap=cmap)
-    plt.colorbar(label="Value")
+    Visualize DSM with real elevation values.
+    """
+    plt.figure(figsize=(10, 8))
+    show(dsm, transform=profile['transform'], cmap="terrain")
+    plt.colorbar(label="Surface Elevation (m)")
+    plt.title(title)
+    plt.show()
+
+
+def visualize_chm(chm, profile, title="Canopy Height Model (CHM)"):
+    """
+    Visualize CHM with tree heights in meters.
+    """
+    plt.figure(figsize=(10, 8))
+    show(chm, transform=profile['transform'], cmap="YlGn")
+    plt.colorbar(label="Height (m)")
+    plt.title(title)
+    plt.show()
+
+
+def visualize_orthophoto(orthophoto, title="Orthophoto (RGB)"):
+    """
+    Visualize RGB orthophoto with true colors.
+    """
+    plt.figure(figsize=(10, 8))
+    # Convert (bands, rows, cols) -> (rows, cols, bands)
+    plt.imshow(np.transpose(orthophoto, (1, 2, 0)))
     plt.title(title)
     plt.axis("off")
     plt.show()
+
 
 
