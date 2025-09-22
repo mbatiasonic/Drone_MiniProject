@@ -128,6 +128,7 @@ def data() -> Union[pd.DataFrame, None]:
         return None
 
 # drone mini_Project_access.py
+!pip install rasterio
 
 import rasterio
 import numpy as np
