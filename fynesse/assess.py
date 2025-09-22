@@ -125,6 +125,7 @@ from shapely.geometry import Polygon
 import geopandas as gpd
 from skimage.segmentation import find_boundaries
 from rasterio.features import shapes
+from rasterio.plot import show
 
 
 def detect_tree_tops(chm, min_distance=3):
