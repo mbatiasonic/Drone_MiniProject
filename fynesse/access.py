@@ -163,35 +163,35 @@ def generate_chm(dsm, dem):
 
 
 def visualize_dem(dem, profile, title="Digital Elevation Model (DEM)"):
-    """
-    Visualize DEM with real elevation values.
-    """
     plt.figure(figsize=(10, 8))
-    show(dem, transform=profile['transform'], cmap="terrain")
-    plt.colorbar(label="Elevation (m)")
+    img = plt.imshow(dem, cmap="terrain",
+                     extent=rasterio.plot.plotting_extent(dem, profile['transform']))
+    plt.colorbar(img, label="Elevation (m)")
     plt.title(title)
+    plt.xlabel("Longitude")
+    plt.ylabel("Latitude")
     plt.show()
 
 
 def visualize_dsm(dsm, profile, title="Digital Surface Model (DSM)"):
-    """
-    Visualize DSM with real elevation values.
-    """
     plt.figure(figsize=(10, 8))
-    show(dsm, transform=profile['transform'], cmap="terrain")
-    plt.colorbar(label="Surface Elevation (m)")
+    img = plt.imshow(dsm, cmap="terrain",
+                     extent=rasterio.plot.plotting_extent(dsm, profile['transform']))
+    plt.colorbar(img, label="Surface Elevation (m)")
     plt.title(title)
+    plt.xlabel("Longitude")
+    plt.ylabel("Latitude")
     plt.show()
 
 
 def visualize_chm(chm, profile, title="Canopy Height Model (CHM)"):
-    """
-    Visualize CHM with tree heights in meters.
-    """
     plt.figure(figsize=(10, 8))
-    show(chm, transform=profile['transform'], cmap="YlGn")
-    plt.colorbar(label="Height (m)")
+    img = plt.imshow(chm, cmap="YlGn",
+                     extent=rasterio.plot.plotting_extent(chm, profile['transform']))
+    plt.colorbar(img, label="Height (m)")
     plt.title(title)
+    plt.xlabel("Longitude")
+    plt.ylabel("Latitude")
     plt.show()
 
 
