@@ -266,3 +266,61 @@ def save_crowns_shapefile(gdf, output_path):
     """
     gdf.to_file(output_path)
 
+def plot_gdf_on_orthophoto(gdf, orthophoto, profile, title="Tree Crowns over Orthophoto"):
+    """
+    Overlay tree crown polygons (GeoDataFrame) onto the orthophoto.
+    
+    Parameters:
+    - gdf: GeoDataFrame with crown polygons
+    - orthophoto: 3D numpy array (RGB)
+    - profile: rasterio profile of orthophoto
+    """
+    fig, ax = plt.subplots(figsize=(12, 10))
+    
+    # Display orthophoto
+    show(orthophoto, transform=profile['transform'], ax=ax)
+    
+    # Plot crown polygons
+    gdf.boundary.plot(ax=ax, color='red', linewidth=1)
+    
+    plt.title(title)
+    plt.xlabel("Longitude")
+    plt.ylabel("Latitude")
+    plt.show()
+
+def save_gdf_to_csv(gdf, output_path):
+    """
+    Save GeoDataFrame attribute table (metrics) as CSV.
+    
+    Parameters:
+    - gdf: GeoDataFrame
+    - output_path: string path to save CSV
+    """
+    gdf.drop(columns='geometry').to_csv(output_path, index=False)
+def plot_crown_metrics(gdf, metrics=['max_height', 'mean_height', 'crown_area', 'crown_diameter']):
+    """
+    Plot histograms and boxplots for tree crown metrics.
+    
+    Parameters:
+    - gdf: GeoDataFrame with crown metrics
+    - metrics: list of column names to plot
+    """
+    for metric in metrics:
+        plt.figure(figsize=(12, 5))
+        
+        # Histogram
+        plt.subplot(1, 2, 1)
+        plt.hist(gdf[metric], bins=20, color='green', alpha=0.7)
+        plt.title(f"{metric} Histogram")
+        plt.xlabel(metric)
+        plt.ylabel("Frequency")
+        
+        # Boxplot
+        plt.subplot(1, 2, 2)
+        plt.boxplot(gdf[metric], vert=True)
+        plt.title(f"{metric} Boxplot")
+        
+        plt.tight_layout()
+        plt.show()
+
+
