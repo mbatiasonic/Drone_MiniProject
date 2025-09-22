@@ -126,3 +126,88 @@ def data() -> Union[pd.DataFrame, None]:
         logger.error(f"Unexpected error loading data: {e}")
         print(f"Error loading data: {e}")
         return None
+
+# drone mini_Project_access.py
+
+import rasterio
+import numpy as np
+import matplotlib.pyplot as plt
+
+def load_rasters(orthophoto_path, dsm_path, dem_path):
+    """
+    Load orthophoto, DSM, and DEM raster files.
+
+    Parameters:
+    -----------
+    orthophoto_path : str
+        Path to the orthophoto (RGB) TIFF file.
+    dsm_path : str
+        Path to the Digital Surface Model (DSM) TIFF file.
+    dem_path : str
+        Path to the Digital Elevation Model (DEM) TIFF file.
+
+    Returns:
+    --------
+    orthophoto : numpy.ndarray
+        Orthophoto raster (bands, rows, cols).
+    dsm : numpy.ndarray
+        DSM raster array.
+    dem : numpy.ndarray
+        DEM raster array.
+    profile : dict
+        Raster profile (from DSM, used later for saving/CHM).
+    """
+    with rasterio.open(orthophoto_path) as src:
+        orthophoto = src.read()  # shape (bands, rows, cols)
+    
+    with rasterio.open(dsm_path) as src:
+        dsm = src.read(1)  # first band only
+        profile = src.profile
+    
+    with rasterio.open(dem_path) as src:
+        dem = src.read(1)  # first band only
+    
+    return orthophoto, dsm, dem, profile
+
+
+def generate_chm(dsm, dem):
+    """
+    Generate Canopy Height Model (CHM) = DSM - DEM.
+
+    Parameters:
+    -----------
+    dsm : numpy.ndarray
+        DSM raster array.
+    dem : numpy.ndarray
+        DEM raster array.
+
+    Returns:
+    --------
+    chm : numpy.ndarray
+        Canopy Height Model (DSM - DEM).
+    """
+    chm = np.where((dsm != 0) & (dem != 0), dsm - dem, np.nan)
+    return chm
+
+
+def visualize_raster(raster, title, cmap="viridis"):
+    """
+    Quick visualization of a single-band raster.
+
+    Parameters:
+    -----------
+    raster : numpy.ndarray
+        2D raster array.
+    title : str
+        Plot title.
+    cmap : str
+        Colormap (default: viridis).
+    """
+    plt.figure(figsize=(8, 6))
+    plt.imshow(raster, cmap=cmap)
+    plt.colorbar(label="Value")
+    plt.title(title)
+    plt.axis("off")
+    plt.show()
+
+
