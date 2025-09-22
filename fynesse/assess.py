@@ -117,6 +117,7 @@ and correctly timezoned."""
 
 import numpy as np
 import rasterio
+import matplotlib.pyplot as plt
 from skimage.feature import peak_local_max
 from skimage.segmentation import watershed
 from scipy import ndimage as ndi
