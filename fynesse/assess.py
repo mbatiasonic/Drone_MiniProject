@@ -163,12 +163,17 @@ def segment_tree_crowns(chm, orthophoto=None):
     # Compute distance transform of inverted CHM (peaks = tree tops)
     distance = ndi.distance_transform_edt(chm_masked)
     
-    # Find local maxima as markers
-    local_maxi = peak_local_max(chm_masked, indices=False, min_distance=3)
-    markers, _ = ndi.label(local_maxi)
+    # Find coordinates of local maxima
+    coordinates = peak_local_max(chm_masked, min_distance=3, exclude_border=False)
+    
+    # Create a marker image
+    markers = np.zeros_like(chm_masked, dtype=int)
+    for i, (r, c) in enumerate(coordinates, start=1):
+        markers[r, c] = i
     
     # Apply watershed
     labeled_crowns = watershed(-chm_masked, markers, mask=(chm_masked > 0))
+
     
     return labeled_crowns
 
