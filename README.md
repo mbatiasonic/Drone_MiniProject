@@ -1,10 +1,10 @@
-MINI PROJECT
+**MINI PROJECT**
 
-Samuel Mbatia Gachana
+**Samuel Mbatia Gachana**
 
-TITLE: Using Canopy Height Model (CHM) to Assess the Forest Structure of a Reforested Stand.
+**TITLE**: **Using Canopy Height Model (CHM) to Assess the Forest Structure of a Reforested Stand.**
 
-ABSTRACT
+**ABSTRACT**
 This project presents a pipeline for assessing forest structure in a reforested area using high-resolution drone imagery and derived digital surface and elevation models (DSM and DEM). By computing the Canopy Height Model (CHM), individual treetops were detected through local maxima analysis, and tree crowns were delineated using a watershed segmentation algorithm. From each segmented crown, quantitative metrics including maximum and mean tree height, crown area, and crown diameter were extracted, and results were aggregated to provide stand-level forest structure information. All outputs were converted to vector polygons and a CSV file compatible with GIS for further spatial analysis. This pipeline demonstrates a scalable approach for detailed forest monitoring, offering tree-level structural data to support reforestation assessment, forest management, and ecological research.
 
 This notebook uses drone imagery and associated digital surface/elevation models (DSM/DEM) to analyze forest structure in a reforested area. The workflow leverages two custom Python modules:
@@ -28,13 +28,13 @@ The project notebook is organized as follows:
 
 The datasets include ;
 
-* 🌍 DEM → ground elevation
+* 🌍 DEM → ground elevation - (https://drive.google.com/file/d/17OPA9JxOHbhhSMxN-caskCdVMEVSqFjn/view?usp=sharing)
 
-* 🌲 DSM → surface elevation (including vegetation/buildings)
+* 🌲 DSM → surface elevation (including vegetation/buildings) (in the data folder)
 
 * 🌳 CHM → tree height (derived DSM – DEM)
 
-* 🖼 Orthophoto → true-color RGB
+* 🖼 Orthophoto → true-color RGB( https://drive.google.com/file/d/17OPA9JxOHbhhSMxN-caskCdVMEVSqFjn/view?usp=sharing)
 
 * To be able to ascertain the extent and see how the dataset looks in the eye, there was visualization of the dataset.
 
