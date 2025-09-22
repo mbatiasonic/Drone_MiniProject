@@ -162,10 +162,21 @@ def generate_chm(dsm, dem):
     return chm
 
 
+def mask_nodata(raster, nodata_value=-9999):
+    """
+    Replace nodata values with NaN for proper visualization.
+    """
+    return np.where(raster == nodata_value, np.nan, raster)
+
+
 def visualize_dem(dem, profile, title="Digital Elevation Model (DEM)"):
+    dem_masked = mask_nodata(dem, profile.get('nodata', -9999))
     plt.figure(figsize=(10, 8))
-    img = plt.imshow(dem, cmap="terrain",
-                     extent=rasterio.plot.plotting_extent(dem, profile['transform']))
+    # Clip extremes to 2nd-98th percentile for better contrast
+    vmin, vmax = np.nanpercentile(dem_masked, [2, 98])
+    img = plt.imshow(dem_masked, cmap="terrain",
+                     extent=rasterio.plot.plotting_extent(dem_masked, profile['transform']),
+                     vmin=vmin, vmax=vmax)
     plt.colorbar(img, label="Elevation (m)")
     plt.title(title)
     plt.xlabel("Longitude")
@@ -174,9 +185,12 @@ def visualize_dem(dem, profile, title="Digital Elevation Model (DEM)"):
 
 
 def visualize_dsm(dsm, profile, title="Digital Surface Model (DSM)"):
+    dsm_masked = mask_nodata(dsm, profile.get('nodata', -9999))
     plt.figure(figsize=(10, 8))
-    img = plt.imshow(dsm, cmap="terrain",
-                     extent=rasterio.plot.plotting_extent(dsm, profile['transform']))
+    vmin, vmax = np.nanpercentile(dsm_masked, [2, 98])
+    img = plt.imshow(dsm_masked, cmap="terrain",
+                     extent=rasterio.plot.plotting_extent(dsm_masked, profile['transform']),
+                     vmin=vmin, vmax=vmax)
     plt.colorbar(img, label="Surface Elevation (m)")
     plt.title(title)
     plt.xlabel("Longitude")
@@ -185,14 +199,16 @@ def visualize_dsm(dsm, profile, title="Digital Surface Model (DSM)"):
 
 
 def visualize_chm(chm, profile, title="Canopy Height Model (CHM)"):
+    chm_masked = mask_nodata(chm, profile.get('nodata', -9999))
     plt.figure(figsize=(10, 8))
-    img = plt.imshow(chm, cmap="YlGn",
-                     extent=rasterio.plot.plotting_extent(chm, profile['transform']))
+    img = plt.imshow(chm_masked, cmap="YlGn",
+                     extent=rasterio.plot.plotting_extent(chm_masked, profile['transform']))
     plt.colorbar(img, label="Height (m)")
     plt.title(title)
     plt.xlabel("Longitude")
     plt.ylabel("Latitude")
     plt.show()
+
 
 
 def visualize_orthophoto(orthophoto, title="Orthophoto (RGB)"):
