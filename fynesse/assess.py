@@ -325,4 +325,58 @@ def plot_crown_metrics(gdf, metrics=['max_height', 'mean_height', 'crown_area', 
         plt.tight_layout()
         plt.show()
 
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy.stats import pearsonr
+
+def analyze_metric_correlations(csv_path, columns=None, output_path=None):
+    """
+    Analyze correlations between tree structural metrics.
+
+    Parameters:
+    - csv_path: str, path to the CSV file containing tree metrics
+    - columns: list of column names to include in the correlation analysis
+               Default: ["tree_height", "crown_diameter", "crown_area", "mean_height"]
+    - output_path: optional str, path to save the correlation heatmap as PNG
+
+    Returns:
+    - corr_matrix: pandas DataFrame containing the correlation matrix
+    - significance: dict with correlation coefficients and p-values
+    """
+
+    if columns is None:
+        columns = ["max_height", "crown_diameter", "crown_area", "mean_height"]
+
+    # Load CSV
+    df = pd.read_csv(csv_path)
+
+    # Filter to selected columns
+    df_metrics = df[columns]
+
+    # Correlation matrix
+    corr_matrix = df_metrics.corr()
+
+    # Compute p-values for correlations
+    significance = {}
+    for col1 in columns:
+        for col2 in columns:
+            if col1 != col2:
+                corr, pval = pearsonr(df_metrics[col1].dropna(), df_metrics[col2].dropna())
+                significance[(col1, col2)] = {"correlation": corr, "p_value": pval}
+
+    # Plot heatmap
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5)
+    plt.title("Correlation between Tree Structural Metrics", fontsize=14)
+    if output_path:
+        plt.savefig(output_path, dpi=300, bbox_inches="tight")
+    plt.show()
+
+    # Pairplot
+    sns.pairplot(df_metrics, diag_kind="kde")
+    plt.suptitle("Pairwise Relationships between Tree Metrics", y=1.02, fontsize=14)
+    plt.show()
+
+    return corr_matrix, significance
 
