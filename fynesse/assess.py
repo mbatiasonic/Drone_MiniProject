@@ -128,7 +128,7 @@ from rasterio.features import shapes
 from rasterio.plot import show
 
 
-def detect_tree_tops(chm, min_distance=0.5):
+def detect_tree_tops(chm, min_distance=1):
     """
     Detect local maxima in the CHM as tree tops.
     
@@ -166,7 +166,7 @@ def segment_tree_crowns(chm, orthophoto=None):
     distance = ndi.distance_transform_edt(chm_masked)
     
     # Find coordinates of local maxima
-    coordinates = peak_local_max(chm_masked, min_distance=0.5, exclude_border=False)
+    coordinates = peak_local_max(chm_masked, min_distance=1, exclude_border=False)
     
     # Create a marker image
     markers = np.zeros_like(chm_masked, dtype=int)
@@ -245,7 +245,7 @@ def compute_crown_metrics(gdf, chm, profile):
     return gdf
 
 
-def assess_forest_structure(chm, profile, orthophoto=None, min_distance=0.5, min_area=1):
+def assess_forest_structure(chm, profile, orthophoto=None, min_distance=1, min_area=1):
     """
     Complete workflow:
     - detect tree tops
